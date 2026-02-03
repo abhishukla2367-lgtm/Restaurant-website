@@ -1,76 +1,166 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import HeroImg from "./restaurant-hero.jpg";
+
+// ===== Local Images =====
+import masalaDosa from "../assets/masaladosa.jpg";
+import meduVada from "../assets/medu-vada.jpg";
+import chettinadCurry from "../assets/chettinad-curry.jpg";
+import filterCoffee from "../assets/filter-coffee.jpg";
+import idliSambar from "../assets/idli-sambar.jpg";
+import heroImage from "../assets/hero-bg.jpg";
 
 const Home = () => {
-  const navigate = useNavigate();
+  const headerHeight = 64; // h-16 fixed header
+
+  // Smooth scroll helper
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
 
   return (
-    <main>
+    <div className="bg-[#FFF7ED] scroll-smooth m-0">
+
+      {/* ================= HERO ================= */}
       <section
-        className="relative bg-cover bg-center h-screen flex items-center justify-center text-center"
-        style={{ backgroundImage: `url(${HeroImg})` }}
-        aria-label="Hero image of Southern Tales Restaurant"
+        id="home"
+        className="relative h-screen flex items-center justify-center text-center overflow-hidden"
       >
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div className="relative max-w-3xl mx-auto px-4 py-20 text-white">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+        {/* Background Image */}
+        <img
+          src={heroImage}
+          alt="South Indian Food"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-2xl px-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">
             Southern Tales
           </h1>
-          <p className="text-lg md:text-2xl mb-8">
-            Authentic South Indian Cuisine
+
+          <p className="text-lg md:text-xl text-gray-200 mb-6">
+            Where every bite tells a story
           </p>
-          <div className="flex flex-wrap justify-center gap-4">
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate("/menu")}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition"
+              onClick={() => scrollToSection("featured")}
+              className="bg-orange-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-600 transition"
             >
-              View Full Menu
+              Explore Dishes
             </button>
-            <a
-              href="tel:+917400032323"
-              className="border-2 border-white px-6 py-3 rounded-lg hover:bg-white hover:text-orange-500 transition font-medium"
+            <button
+              onClick={() => scrollToSection("reservation")}
+              className="border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition"
             >
-              Call To Book
-            </a>
+              Reserve Table
+            </button>
           </div>
         </div>
       </section>
-      <section className="py-20 px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">About Us</h2>
-        <p className="text-gray-700 max-w-2xl mx-auto">
-          Experience the rich flavours of South India — from dosas and sambar to
-          spicy curries and traditional desserts prepared fresh daily.
-        </p>
-      </section>
-      <section className="py-20 px-4 text-center bg-gray-50">
-        <h2 className="text-3xl md:text-4xl font-bold mb-10">Featured Dishes</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <article className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-2">Masala Dosa</h3>
-            <p className="text-gray-600">Crispy rice crepe with spiced potatoes and chutneys.</p>
-          </article>
-          <article className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-2">Chicken Chettinad</h3>
-            <p className="text-gray-600">Spicy, aromatic chicken curry with authentic masalas.</p>
-          </article>
-          <article className="bg-white shadow-lg rounded-lg p-6">
-            <h3 className="text-xl font-semibold mb-2">Filter Coffee</h3>
-            <p className="text-gray-600">Rich South Indian filter coffee served hot.</p>
-          </article>
+
+      {/* ================= ABOUT ================= */}
+      <section
+        id="about"
+        className="min-h-screen bg-yellow-100 flex items-center justify-center text-center px-6"
+      >
+        <div className="max-w-3xl">
+          <h2 className="text-4xl font-bold mb-4">About Us</h2>
+          <p className="text-lg text-gray-700">
+            Southern Tales brings authentic South Indian flavors using traditional
+            recipes, fresh ingredients, and time-honored cooking methods.
+          </p>
         </div>
       </section>
-      <section className="py-20 px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">Hungry?</h2>
-        <button
-          onClick={() => navigate("/menu")}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-medium transition"
-        >
-          Explore Our Menu
-        </button>
+
+      {/* ================= FEATURED DISHES ================= */}
+      <section id="featured" className="py-20 bg-orange-100">
+        <h2 className="text-3xl font-bold text-center mb-12">
+          Popular Dishes
+        </h2>
+
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <DishCard img={masalaDosa} name="Masala Dosa" />
+          <DishCard
+            img="https://images.unsplash.com/photo-1589302168068-964664d93dc0"
+            name="Hyderabadi Biryani"
+          />
+          <DishCard img={chettinadCurry} name="Chettinad Curry" />
+        </div>
       </section>
-    </main>
+
+      {/* ================= GALLERY ================= */}
+      <section id="gallery" className="py-20 bg-orange-50">
+        <h2 className="text-3xl font-bold text-center mb-12">Gallery</h2>
+
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
+          <GalleryCard img={masalaDosa} title="Masala Dosa" />
+          <GalleryCard img={meduVada} title="Medu Vada" />
+          <GalleryCard img={chettinadCurry} title="Chettinad Curry" />
+          <GalleryCard img={idliSambar} title="Idli Sambar" />
+          <GalleryCard img={filterCoffee} title="Filter Coffee" />
+          <GalleryCard
+            img="https://images.unsplash.com/photo-1589302168068-964664d93dc0"
+            title="Hyderabadi Biryani"
+          />
+        </div>
+      </section>
+
+      {/* ================= RESERVATION ================= */}
+      <section
+  id="reservation"
+  className="bg-orange-500 flex items-center justify-center text-center px-6"
+  style={{ minHeight: "350px" }} // optional: keeps previous size
+>
+  <div className="max-w-2xl">
+    <h2 className="text-4xl font-bold mb-4">Weekend Special 🎉</h2>
+    <p className="text-lg mb-6">Flat 20% off on family dining</p>
+    <button className="bg-white text-orange-500 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
+      Book Now
+    </button>
+  </div>
+</section>
+
+
+      {/* ================= CONTACT ================= */}
+      <section
+        id="contact"
+        className="min-h-screen bg-orange-400 flex items-center justify-center text-center text-white"
+      >
+        <div>
+          <h2 className="text-4xl font-bold mb-4">Contact Us</h2>
+          <p>contact@southerntales.com</p>
+          <p>+91 98765 43210</p>
+        </div>
+      </section>
+    </div>
   );
 };
+
+/* ================= REUSABLE COMPONENTS ================= */
+
+const DishCard = ({ img, name }) => (
+  <div className="bg-white rounded-xl shadow hover:scale-105 transition p-6 text-center">
+    <img
+      src={img}
+      alt={name}
+      className="h-48 w-full object-cover rounded-lg mb-4"
+    />
+    <h3 className="text-xl font-semibold">{name}</h3>
+  </div>
+);
+
+const GalleryCard = ({ img, title }) => (
+  <div className="bg-white rounded-xl shadow hover:scale-105 transition overflow-hidden">
+    <img src={img} alt={title} className="h-64 w-full object-cover" />
+    <p className="p-4 font-semibold text-center">{title}</p>
+  </div>
+);
 
 export default Home;
