@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.jpeg";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ShoppingCart, Phone, X } from "lucide-react";
 
 const navItems = [
+  { id: "home", label: "Home" },
+  { id: "menu", label: "Menu" },
   { id: "about", label: "About" },
   { id: "gallery", label: "Gallery" },
   { id: "reservation", label: "Reservation" },
@@ -12,67 +14,143 @@ const navItems = [
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const headerHeight = 64; // Tailwind h-16 = 64px
+  const location = useLocation();
 
-  const goToSection = (id) => {
-    navigate("/");
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - headerHeight;
-        window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-      }
-    }, 100);
+  const handleNavClick = (id) => {
     setIsOpen(false);
+
+    if (id === "menu") {
+      navigate("/menu");
+      return;
+    }
+
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 300);
+    } else {
+      document.getElementById(id)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
+  useEffect(() => {
+    const esc = (e) => e.key === "Escape" && setIsOpen(false);
+    window.addEventListener("keydown", esc);
+    return () => window.removeEventListener("keydown", esc);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-yellow-100 shadow-md h-16">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-full">
-        <div
-          onClick={() => goToSection("home")}
-          className="flex items-center gap-3 cursor-pointer"
-        >
-          <img src={logo} alt="Southern Tales Logo" className="w-10 h-10 object-contain" />
-          <span className="text-xl font-bold text-yellow-900">Southern Tales</span>
+    <>
+      {/* HEADER */}
+      <header
+        className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
+          isOpen
+            ? "bg-[#3B241B]/90 backdrop-blur-xl"
+            : "bg-[#3B241B]/70 backdrop-blur-xl"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex h-[72px] items-center justify-between">
+            {/* Logo */}
+            <div
+              onClick={() => handleNavClick("home")}
+              className="text-yellow-300 font-bold text-xl cursor-pointer"
+            >
+              Southern Tales
+            </div>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex gap-6 flex-1 justify-center">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className="text-yellow-200 hover:text-orange-400 transition font-medium"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-4">
+              <button className="relative text-yellow-200">
+                <ShoppingCart size={22} />
+                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-1.5">
+                  0
+                </span>
+              </button>
+
+              <a
+                href="tel:+919876543210"
+                className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
+              >
+                <Phone size={16} /> Call Now
+              </a>
+            </div>
+
+            {/* Mobile Hamburger */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="md:hidden text-3xl text-yellow-200"
+            >
+              ☰
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* MOBILE DRAWER */}
+      <div
+        className={`fixed top-0 left-0 h-full w-64 bg-[#3B241B] z-50 transform transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex justify-end p-4">
+          <button onClick={() => setIsOpen(false)}>
+            <X size={28} className="text-yellow-200" />
+          </button>
         </div>
 
-        <nav className="hidden md:flex gap-8 text-yellow-900 font-medium">
+        <nav className="flex flex-col gap-6 px-6">
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => goToSection(item.id)}
-              className="hover:text-orange-600 transition-colors"
+              onClick={() => handleNavClick(item.id)}
+              className="text-yellow-200 text-lg text-left hover:text-orange-400"
             >
               {item.label}
             </button>
           ))}
-        </nav>
 
-        <button
-          aria-label="Toggle menu"
-          className="md:hidden text-2xl text-yellow-900 focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          ☰
-        </button>
+          <button className="flex items-center gap-3 text-yellow-200 text-lg mt-4">
+            <ShoppingCart size={22} /> Cart (0)
+          </button>
+
+          <a
+            href="tel:+919876543210"
+            className="rounded-full bg-yellow-400 py-2 text-center text-black font-semibold hover:bg-yellow-300 mt-4"
+          >
+            Call Now
+          </a>
+        </nav>
       </div>
 
+      {/* BACKDROP */}
       {isOpen && (
-        <div className="md:hidden bg-yellow-50 px-6 py-4 space-y-4 shadow-inner">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => goToSection(item.id)}
-              className="block w-full text-left focus:outline-none"
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40"
+        />
       )}
-    </header>
+    </>
   );
 };
 
