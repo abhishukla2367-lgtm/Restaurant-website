@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Phone, X } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 const navItems = [
   { id: "home", label: "Home" },
@@ -16,6 +17,9 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { cartItems } = useCart();
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   const handleNavClick = (id) => {
     setIsOpen(false);
 
@@ -27,16 +31,10 @@ const Header = () => {
     if (location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     } else {
-      document.getElementById(id)?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -51,18 +49,13 @@ const Header = () => {
       {/* HEADER */}
       <header
         className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
-          isOpen
-            ? "bg-[#3B241B]/90 backdrop-blur-xl"
-            : "bg-[#3B241B]/70 backdrop-blur-xl"
+          isOpen ? "bg-[#3B241B]/90 backdrop-blur-xl" : "bg-[#3B241B]/70 backdrop-blur-xl"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex h-[72px] items-center justify-between">
             {/* Logo */}
-            <div
-              onClick={() => handleNavClick("home")}
-              className="text-yellow-300 font-bold text-xl cursor-pointer"
-            >
+            <div onClick={() => handleNavClick("home")} className="text-yellow-300 font-bold text-xl cursor-pointer">
               Southern Tales
             </div>
 
@@ -81,10 +74,10 @@ const Header = () => {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-4">
-              <button className="relative text-yellow-200">
+              <button onClick={() => navigate("/cart")} className="relative text-yellow-200">
                 <ShoppingCart size={22} />
                 <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-1.5">
-                  0
+                  {totalItems}
                 </span>
               </button>
 
@@ -97,10 +90,7 @@ const Header = () => {
             </div>
 
             {/* Mobile Hamburger */}
-            <button
-              onClick={() => setIsOpen(true)}
-              className="md:hidden text-3xl text-yellow-200"
-            >
+            <button onClick={() => setIsOpen(true)} className="md:hidden text-3xl text-yellow-200">
               ☰
             </button>
           </div>
@@ -130,26 +120,18 @@ const Header = () => {
             </button>
           ))}
 
-          <button className="flex items-center gap-3 text-yellow-200 text-lg mt-4">
-            <ShoppingCart size={22} /> Cart (0)
+          <button onClick={() => navigate("/cart")} className="flex items-center gap-3 text-yellow-200 text-lg mt-4">
+            <ShoppingCart size={22} /> Cart ({totalItems})
           </button>
 
-          <a
-            href="tel:+919876543210"
-            className="rounded-full bg-yellow-400 py-2 text-center text-black font-semibold hover:bg-yellow-300 mt-4"
-          >
+          <a href="tel:+919876543210" className="rounded-full bg-yellow-400 py-2 text-center text-black font-semibold hover:bg-yellow-300 mt-4">
             Call Now
           </a>
         </nav>
       </div>
 
       {/* BACKDROP */}
-      {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40"
-        />
-      )}
+      {isOpen && <div onClick={() => setIsOpen(false)} className="fixed inset-0 bg-black/40 z-40" />}
     </>
   );
 };

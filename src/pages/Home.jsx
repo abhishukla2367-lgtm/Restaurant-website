@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react"; // Angular arrows
+import { ArrowLeft, ArrowRight, Phone } from "lucide-react";
 
 /* ================= IMAGE IMPORTS ================= */
 
@@ -22,16 +22,17 @@ import gallery4 from "../assets/images/gallery/gallery4.jpg";
 import gallery5 from "../assets/images/gallery/gallery5.jpg";
 import gallery6 from "../assets/images/gallery/gallery6.jpg";
 
+// Our Story Image
+import aboutImage from "../assets/images/about/our-story.jpg";
+
 /* ================= DATA ================= */
 
-// Hero Images (KEEP AS URLS)
 const heroImages = [
   "https://images.pexels.com/photos/35539315/pexels-photo-35539315.jpeg?auto=compress&cs=tinysrgb&w=1470",
   "https://images.pexels.com/photos/31199041/pexels-photo-31199041.jpeg?auto=compress&cs=tinysrgb&w=1470",
   "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1470",
 ];
 
-// Promotional Offers
 const offers = [
   {
     img: offer1,
@@ -50,14 +51,12 @@ const offers = [
   },
 ];
 
-// Popular Dishes
 const dishes = [
   { img: dosa, name: "Masala Dosa", price: "₹160", veg: true },
   { img: idli, name: "Idli Sambar", price: "₹120", veg: true },
   { img: meduvada, name: "Medu Vada", price: "₹90", veg: true },
 ];
 
-// Gallery Images
 const galleryImages = [
   gallery1,
   gallery2,
@@ -96,23 +95,23 @@ const Home = () => {
         className="relative h-screen flex items-center justify-center text-center bg-cover bg-center"
         style={{ backgroundImage: `url(${heroImages[currentHero]})` }}
       >
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/60 pointer-events-none" />
 
-        {/* Angular Left & Right Arrows */}
-        <div className="absolute inset-0 flex items-center justify-between px-4 z-20">
+        <div className="absolute inset-0 flex items-center justify-between px-4 z-20 pointer-events-none">
           <button
             onClick={() =>
               setCurrentHero((prev) => (prev - 1 + heroImages.length) % heroImages.length)
             }
-            className="bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition"
+            className="bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition pointer-events-auto"
           >
             <ArrowLeft size={32} />
           </button>
+
           <button
             onClick={() =>
               setCurrentHero((prev) => (prev + 1) % heroImages.length)
             }
-            className="bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition"
+            className="bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition pointer-events-auto"
           >
             <ArrowRight size={32} />
           </button>
@@ -125,18 +124,19 @@ const Home = () => {
           <p className="text-lg text-gray-200 mb-6">
             Where every bite tells a story
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-4 justify-center">
             <button
-              onClick={() => navigate("/menu")}
+              onClick={() => navigate("/menu", { state: { scrollToId: "hero-section" } })}
               className="bg-orange-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-600"
             >
               Explore Menu
             </button>
             <button
               onClick={() => scrollToId("reservation")}
-              className="border border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-black"
+              className="flex items-center gap-2 border border-white text-white px-8 py-3 rounded-full hover:bg-white hover:text-black"
             >
-              Reserve Table
+              <Phone size={18} />
+              Call Now
             </button>
           </div>
         </div>
@@ -158,17 +158,82 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ABOUT */}
-      <section id="about" className="py-20 bg-yellow-100 text-center px-6">
-        <h2 className="text-4xl font-bold mb-4">About Us</h2>
-        <p className="max-w-3xl mx-auto text-lg text-gray-700">
-          Southern Tales brings authentic South Indian flavors using traditional
-          recipes, fresh ingredients, and time-honored cooking methods.
-        </p>
+      {/* OUR STORY */}
+      <section id="about" className="py-20 px-6">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-stretch">
+          
+          {/* Left Image */}
+          <div
+            className="w-full h-full rounded-xl shadow-lg bg-cover bg-center"
+            style={{ backgroundImage: `url(${aboutImage})` }}
+          ></div>
+
+          {/* Right Text */}
+          <div className="flex flex-col justify-center bg-yellow-100 p-6 rounded-xl">
+            <h2 className="text-4xl font-bold mb-2">Our Story</h2>
+            <h3 className="text-2xl font-semibold text-orange-500 mb-6">
+              A Taste of Southern Heritage
+            </h3>
+
+            <p>Welcome to Southern Tales, where every dish tells a story of tradition, flavor, and the rich culinary heritage of South India.</p>
+            <p>Nestled in the heart of CBD Belapur, we bring you an authentic dining experience celebrating flavors from Kerala, Tamil Nadu, Karnataka, and Andhra Pradesh.</p>
+            <p>Our chefs craft each dish using time-honored recipes passed down through generations, with the freshest ingredients and traditional spices.</p>
+            <p>From crispy dosas to aromatic biryanis, every bite is a journey through the vibrant streets of the South.</p>
+            <p>We combine culinary expertise with passion to create an unforgettable gastronomic experience.</p>
+            <p>Our warm ambiance and attentive service ensure a memorable dining experience for all guests.</p>
+            <p>Join the thousands of happy customers who have experienced the taste, tradition, and hospitality of Southern Tales.</p>
+
+            {/* Stats - horizontal */}
+            <div className="flex gap-12 mt-6">
+              <div className="text-center">
+                <h4 className="text-2xl font-bold text-orange-500">15+</h4>
+                <p className="text-gray-700 font-medium">Years Experience</p>
+              </div>
+              <div className="text-center">
+                <h4 className="text-2xl font-bold text-orange-500">50+</h4>
+                <p className="text-gray-700 font-medium">Signature Dishes</p>
+              </div>
+              <div className="text-center">
+                <h4 className="text-2xl font-bold text-orange-500">10K+</h4>
+                <p className="text-gray-700 font-medium">Happy Customers</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY CHOOSE US */}
+      <section id="why-choose-us" className="py-20 bg-yellow-50 px-6">
+        <h2 className="text-4xl font-bold text-center mb-12">Why Choose Us</h2>
+        <div className="max-w-6xl mx-auto grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+            <div className="text-5xl mb-4">🍛</div>
+            <h3 className="text-xl font-semibold mb-3">Authentic Taste</h3>
+            <p className="text-gray-700">
+              Traditional South Indian recipes prepared with original spices and methods.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+            <div className="text-5xl mb-4">🥬</div>
+            <h3 className="text-xl font-semibold mb-3">Fresh Ingredients</h3>
+            <p className="text-gray-700">
+              Fresh, locally sourced ingredients ensuring quality and flavor.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+            <div className="text-5xl mb-4">🤝</div>
+            <h3 className="text-xl font-semibold mb-3">Warm Hospitality</h3>
+            <p className="text-gray-700">
+              Friendly service and a welcoming dining experience every time.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* POPULAR DISHES */}
-      <section id="popular" className="py-20 bg-yellow-50">
+      <section id="popular" className="py-10 bg-yellow-100">
         <h2 className="text-3xl font-bold text-center mb-12">Popular Dishes</h2>
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 px-6">
           {dishes.map((dish, idx) => (

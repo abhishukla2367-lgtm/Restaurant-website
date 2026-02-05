@@ -1,19 +1,32 @@
 import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
-import { SiX } from "react-icons/si"; // X icon
+import { SiX } from "react-icons/si";
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToSection = (path, sectionId) => {
+    if (location.pathname === path) {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate(path, { state: { scrollToId: sectionId } });
+    }
+  };
+
   const links = [
-    { label: "Home", href: "#home" },
-    { label: "Menu", href: "#featured" },
-    { label: "Reservation", href: "#reservation" },
-    { label: "Contact", href: "#contact" },
+    { label: "Home", action: () => scrollToSection("/", "home") },
+    { label: "Menu", action: () => scrollToSection("/menu", "hero-section") },
+    { label: "Reservation", action: () => scrollToSection("/", "reservation") },
+    { label: "Contact", action: () => scrollToSection("/", "contact") },
   ];
 
   const socialLinks = [
     { icon: <FaFacebookF />, href: "https://facebook.com" },
     { icon: <FaInstagram />, href: "https://instagram.com" },
-    { icon: <SiX />, href: "https://x.com" }, // X icon
+    { icon: <SiX />, href: "https://x.com" },
   ];
 
   return (
@@ -42,14 +55,14 @@ const Footer = () => {
         <div>
           <h4 className="font-semibold text-white mb-3">Quick Links</h4>
           <ul className="space-y-2">
-            {links.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="block w-full px-4 py-2 rounded hover:bg-orange-500 hover:text-white transition"
+            {links.map((link, index) => (
+              <li key={index}>
+                <button
+                  onClick={link.action}
+                  className="block w-full text-left px-4 py-2 rounded hover:bg-orange-500 hover:text-white transition"
                 >
                   {link.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
@@ -63,7 +76,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright */}
       <div className="text-center text-sm py-4 border-t border-gray-700">
         © {new Date().getFullYear()} Southern Tales. All rights reserved.
       </div>
