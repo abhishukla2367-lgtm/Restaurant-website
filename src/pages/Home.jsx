@@ -201,6 +201,60 @@ const Home = () => {
           </div>
         </div>
       </section>
+    {/* OUR SERVICES */}
+<section id="services" className="py-24 bg-[#1E293B] px-6">
+  <div className="max-w-7xl mx-auto">
+    
+    {/* Heading */}
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold mb-3 text-[#F9FAF7]">
+        Our Services
+      </h2>
+    </div>
+
+    {/* Services Grid */}
+    <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+        <div className="text-5xl mb-5">🍽️</div>
+        <h3 className="text-xl font-semibold mb-3">Dine-In Experience</h3>
+        <p className="text-gray-700">
+          Enjoy authentic South Indian cuisine in a warm,
+          comfortable ambiance.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+        <div className="text-5xl mb-5">🥡</div>
+        <h3 className="text-xl font-semibold mb-3">Takeaway & Pickup</h3>
+        <p className="text-gray-700">
+          Freshly prepared meals packed with care for
+          dining anywhere.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+        <div className="text-5xl mb-5">🎉</div>
+        <h3 className="text-xl font-semibold mb-3">Catering Services</h3>
+        <p className="text-gray-700">
+          Customized catering for weddings, parties,
+          and corporate events.
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:-translate-y-2 transition">
+        <div className="text-5xl mb-5">📦</div>
+        <h3 className="text-xl font-semibold mb-3">Online Orders</h3>
+        <p className="text-gray-700">
+          Seamless online ordering with fast
+          preparation and service.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
       {/* WHY CHOOSE US */}
       <section id="why-choose-us" className="py-20 bg-yellow-50 px-6">
@@ -243,8 +297,8 @@ const Home = () => {
       </section>
 
       {/* GALLERY */}
-      <section id="gallery" className="py-20 bg-gray-100 text-center px-6">
-        <h2 className="text-4xl font-bold mb-10">Gallery</h2>
+     <section id="gallery" className="py-20 bg-[#0F3D3E] text-[#F9FAF7] text-center px-6">
+      <h2 className="text-4xl font-bold mb-10">Gallery</h2>
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {galleryImages.map((img, idx) => (
             <img
@@ -258,18 +312,76 @@ const Home = () => {
       </section>
 
       {/* RESERVATION */}
-      <section id="reservation" className="py-20 bg-yellow-50 text-center px-6">
-        <h2 className="text-4xl font-bold mb-8">Reservation</h2>
-        <form className="bg-white max-w-lg mx-auto p-6 rounded-xl shadow space-y-4">
-          <input className="w-full border px-4 py-2 rounded" placeholder="Name" />
-          <input className="w-full border px-4 py-2 rounded" placeholder="Email" />
-          <input className="w-full border px-4 py-2 rounded" type="date" />
-          <input className="w-full border px-4 py-2 rounded" type="time" />
-          <button className="w-full bg-orange-500 text-white py-2 rounded font-semibold">
-            Reserve
-          </button>
-        </form>
-      </section>
+<section
+  id="reservation"
+  className="py-24 px-6 bg-gradient-to-r from-[#7A1F2A] via-[#8B2C2C] to-[#9C5A2E]"
+>
+  <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    
+    {/* LEFT CONTENT */}
+    <div className="text-[#F9FAF7]">
+      <p className="text-yellow-400 font-semibold mb-2 tracking-wide">
+        RESERVE YOUR EXPERIENCE
+      </p>
+
+      <h2 className="text-4xl md:text-5xl font-extrabold mb-6">
+        Book Your Table Today
+      </h2>
+
+      <p className="text-lg text-[#F3EDE7] mb-8 leading-relaxed">
+        Join us for an unforgettable dining experience. Whether it's a family
+        gathering, business meeting, or a romantic dinner, we have the perfect
+        setting for every occasion.
+      </p>
+
+      <button className="bg-yellow-400 text-black px-8 py-3 rounded-full font-semibold hover:bg-yellow-500 transition">
+        Make a Reservation
+      </button>
+    </div>
+
+    {/* RIGHT FEATURES */}
+    <div className="space-y-6">
+      
+      <div className="flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl p-5">
+        <div className="bg-yellow-400 text-black p-3 rounded-lg text-xl">
+          📅
+        </div>
+        <div>
+          <h4 className="text-lg font-semibold text-white">Easy Booking</h4>
+          <p className="text-[#E5DED8] text-sm">
+            Reserve your table in just a few clicks
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl p-5">
+        <div className="bg-yellow-400 text-black p-3 rounded-lg text-xl">
+          ⏰
+        </div>
+        <div>
+          <h4 className="text-lg font-semibold text-white">Flexible Timing</h4>
+          <p className="text-[#E5DED8] text-sm">
+            Choose from various time slots that suit you
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 bg-white/10 backdrop-blur rounded-xl p-5">
+        <div className="bg-yellow-400 text-black p-3 rounded-lg text-xl">
+          👥
+        </div>
+        <div>
+          <h4 className="text-lg font-semibold text-white">Group Friendly</h4>
+          <p className="text-[#E5DED8] text-sm">
+            Accommodate groups of all sizes with ease
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
       {/* CONTACT */}
       <section id="contact" className="py-20 bg-yellow-100 text-center px-6">

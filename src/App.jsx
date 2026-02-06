@@ -1,46 +1,58 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
-// Components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
 
-// Pages
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import OrderSummaryPage from "./pages/OrderSummaryPage";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
+import Reservation from "./pages/Reservation";
+import Gallery from "./pages/Gallery";
 
-// Context
 import { CartProvider } from "./context/CartContext";
+
+/* 🔹 Scroll to top on every route change */
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pathname]);
+
+  return null;
+};
 
 export default function App() {
   return (
-    <CartProvider> {/* Wrap the entire app so all components can access the cart */}
+    <CartProvider>
       <Router>
-        {/* Header always visible */}
+        <ScrollToTop />
+
         <Header />
 
-        {/* Main content */}
         <main className="min-h-[80vh]">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/order-summary" element={<OrderSummaryPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-
-            {/* Cart route */}
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/reservation" element={<Reservation />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/cart" element={<CartDrawer />} />
-
-            {/* Optional: fallback to home for unknown routes */}
             <Route path="*" element={<Home />} />
           </Routes>
         </main>
 
-        {/* Footer always visible */}
         <Footer />
       </Router>
     </CartProvider>

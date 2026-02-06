@@ -4,12 +4,12 @@ import { ShoppingCart, Phone, X } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 const navItems = [
-  { id: "home", label: "Home" },
-  { id: "menu", label: "Menu" },
-  { id: "about", label: "About" },
-  { id: "gallery", label: "Gallery" },
-  { id: "reservation", label: "Reservation" },
-  { id: "contact", label: "Contact" },
+  { id: "home", label: "Home", type: "scroll" },
+  { id: "menu", label: "Menu", type: "page", path: "/menu" },
+  { id: "about", label: "About", type: "page", path: "/about" },
+  { id: "gallery", label: "Gallery", type: "page", path: "/gallery" },
+  { id: "reservation", label: "Reservation", type: "page", path: "/reservation" },
+  { id: "contact", label: "Contact", type: "scroll" },
 ];
 
 const Header = () => {
@@ -20,22 +20,32 @@ const Header = () => {
   const { cartItems } = useCart();
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleNavClick = (id) => {
+  const handleNavClick = (item) => {
     setIsOpen(false);
-
-    if (id === "menu") {
-      navigate("/menu");
+    if (item.type === "page") {
+      navigate(item.path);
       return;
     }
-
     if (location.pathname !== "/") {
       navigate("/");
       setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     } else {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  // 👉 WRITE IT HERE
+  const handleCall = () => {
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      window.alert("Call us at +91 98765 43210");
+      return;
+    }
+
+    window.location.href = "tel:+919876543210";
   };
 
   useEffect(() => {
@@ -48,14 +58,19 @@ const Header = () => {
     <>
       {/* HEADER */}
       <header
-        className={`fixed top-0 w-full z-50 transition-colors duration-300 ${
-          isOpen ? "bg-[#3B241B]/90 backdrop-blur-xl" : "bg-[#3B241B]/70 backdrop-blur-xl"
-        }`}
-      >
+  className={`fixed top-0 w-full z-50 pointer-events-auto transition-colors duration-300 ${
+    isOpen ? "bg-[#3B241B]/90 backdrop-blur-xl" : "bg-[#3B241B]/70 backdrop-blur-xl"
+  }`}
+>
+
+      
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex h-[72px] items-center justify-between">
             {/* Logo */}
-            <div onClick={() => handleNavClick("home")} className="text-yellow-300 font-bold text-xl cursor-pointer">
+            <div
+              onClick={() => handleNavClick({ id: "home", type: "scroll" })}
+              className="text-yellow-300 font-bold text-xl cursor-pointer"
+            >
               Southern Tales
             </div>
 
@@ -64,7 +79,7 @@ const Header = () => {
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => handleNavClick(item.id)}
+                  onClick={() => handleNavClick(item)}
                   className="text-yellow-200 hover:text-orange-400 transition font-medium"
                 >
                   {item.label}
@@ -81,12 +96,14 @@ const Header = () => {
                 </span>
               </button>
 
-              <a
-                href="tel:+919876543210"
-                className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
-              >
-                <Phone size={16} /> Call Now
-              </a>
+              <button
+  onClick={handleCall}
+  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
+>
+  <Phone size={16} /> Call Now
+</button>
+
+
             </div>
 
             {/* Mobile Hamburger */}
@@ -113,27 +130,42 @@ const Header = () => {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleNavClick(item.id)}
+              onClick={() => handleNavClick(item)}
               className="text-yellow-200 text-lg text-left hover:text-orange-400"
             >
               {item.label}
             </button>
           ))}
 
-          <button onClick={() => navigate("/cart")} className="flex items-center gap-3 text-yellow-200 text-lg mt-4">
+          <button
+            onClick={() => navigate("/cart")}
+            className="flex items-center gap-3 text-yellow-200 text-lg mt-4"
+          >
             <ShoppingCart size={22} /> Cart ({totalItems})
           </button>
 
-          <a href="tel:+919876543210" className="rounded-full bg-yellow-400 py-2 text-center text-black font-semibold hover:bg-yellow-300 mt-4">
-            Call Now
-          </a>
+          <button
+  onClick={handleCall}
+  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
+>
+  <Phone size={16} /> Call Now
+</button>
+
+
         </nav>
       </div>
 
       {/* BACKDROP */}
-      {isOpen && <div onClick={() => setIsOpen(false)} className="fixed inset-0 bg-black/40 z-40" />}
+           
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40 pointer-events-auto"
+        />
+      )}
     </>
   );
 };
 
 export default Header;
+

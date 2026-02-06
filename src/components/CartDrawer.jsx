@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import emptyCartImage from "../assets/images/empty-cart.jpg";
+import eatsureLogo from "../assets/images/eat-sure-logo.png";
 
 const CartDrawer = () => {
   const navigate = useNavigate();
@@ -43,8 +44,8 @@ const CartDrawer = () => {
       logo: "https://upload.wikimedia.org/wikipedia/commons/7/74/Dominos_pizza_logo.svg",
     },
     {
-      name: "EatClub",
-      logo: "https://eatclub.in/assets/images/logo.svg",
+      name: "EatSure",
+      logo: eatsureLogo,
     },
   ];
 
