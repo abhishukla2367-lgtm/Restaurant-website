@@ -1,119 +1,214 @@
-import React from "react";
+import React, { useState } from "react";
 
-export default function Contact() {
+const reviewsData = [
+  {
+    name: "Rohit Verma",
+    rating: 5,
+    comment:
+      "Authentic South Indian flavors. The dosa was crisp and the filter coffee was excellent.",
+  },
+  {
+    name: "Ananya Iyer",
+    rating: 3,
+    comment:
+      "Loved the ambience and taste. Sambhar was rich and very comforting.",
+  },
+  {
+    name: "Vikram Patel",
+    rating: 4,
+    comment:
+      "Food was good overall, but service was slightly slow during rush hours.",
+  },
+];
+
+const Star = () => (
+  <svg
+    className="w-5 h-5 fill-yellow-400"
+    viewBox="0 0 20 20"
+  >
+    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.381-2.455a1 1 0 00-1.176 0l-3.38 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.97a1 1 0 00-.364-1.118L2.075 9.397c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.97z" />
+  </svg>
+);
+
+const Contact = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Form submitted!");
+    setForm({ name: "", email: "", message: "" });
+  };
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    setReviewSubmitted(true);
+    setTimeout(() => setReviewSubmitted(false), 3000);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-12">
-      <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
-        {/* Contact Form */}
-        <div className="bg-white shadow-md rounded-lg p-8">
-          <h2 className="text-3xl font-semibold mb-6">Contact Us</h2>
-          <form className="space-y-4">
-            <div>
-              <label className="block text-gray-700 mb-1">Name</label>
-              <input
-                type="text"
-                placeholder="Your Name"
-                className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                placeholder="Your Email"
-                className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-1">Message</label>
-              <textarea
-                rows="5"
-                placeholder="Your Message"
-                className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-              ></textarea>
-            </div>
-            <button className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
-              Send Message
-            </button>
-          </form>
-        </div>
+    <div className="max-w-7xl mx-auto px-6 py-20 space-y-20">
 
-        {/* Address + Map */}
-        <div className="space-y-6">
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h3 className="text-2xl font-semibold mb-4">Our Address</h3>
-            <p>123 Food Street, Gourmet City, India</p>
-            <p>Phone: +91 98765 43210</p>
-            <p>Email: contact@restaurant.com</p>
-          </div>
-          <div className="overflow-hidden rounded-lg shadow-md h-64">
-            <iframe
-              title="restaurant-location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3651.902946071763!2d90.3691!3d23.7509!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDQ1JzQwLjgiTiA5MMKwMjInMzUuMCJF!5e0!3m2!1sen!2sin!4v1679966767635!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              className="border-0"
-              allowFullScreen=""
-              loading="lazy"
-            ></iframe>
-          </div>
-        </div>
-      </div>
+      {/* Contact Form */}
+      <section className="bg-yellow-50 rounded-xl shadow p-8 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold mb-6 text-center">Contact Us</h2>
 
-      {/* Testimonials / Reviews */}
-      <section className="mt-16 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-semibold mb-8 text-center">Customer Reviews</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {["John Doe", "Jane Smith", "Alex Johnson"].map((name, i) => (
-            <div key={i} className="bg-white shadow-md rounded-lg p-6">
-              <div className="flex items-center mb-4">
-                <div className="flex text-yellow-400">
-                  {Array(5)
-                    .fill(0)
-                    .map((_, idx) => (
-                      <svg
-                        key={idx}
-                        className="w-5 h-5 fill-current"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M10 15l-5.878 3.09L5.24 12.18 0 7.91l6.061-.88L10 2.5l3.939 4.53L20 7.91l-5.24 4.27 1.118 5.91z" />
-                      </svg>
-                    ))}
-                </div>
-              </div>
-              <p className="text-gray-700 mb-2">
-                "Excellent food and service! Highly recommended."
-              </p>
-              <h4 className="font-semibold">{name}</h4>
-            </div>
-          ))}
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+          <input
+  type="text"
+  name="contact_name_fake"
+  placeholder="Name"
+  value={form.name}
+  onChange={handleChange}
+  autoComplete="new-password"
+  aria-autocomplete="none"
+  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+  required
+/>
 
-        {/* Review Submission Form */}
-        <div className="mt-12 bg-white shadow-md rounded-lg p-8 max-w-xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-4">Submit Your Review</h3>
-          <form className="space-y-4">
-            <input
-              type="text"
-              placeholder="Your Name"
-              className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-            />
-            <input
-              type="email"
-              placeholder="Your Email"
-              className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-            />
-            <textarea
-              rows="4"
-              placeholder="Your Review"
-              className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none"
-            ></textarea>
-            <button className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
-              Submit Review
-            </button>
-          </form>
+
+          {/* Email without browser autocomplete */}
+          <input
+  type="email"
+  name="contact_email_fake"
+  placeholder="Email"
+  value={form.email}
+  onChange={handleChange}
+  autoComplete="new-password"
+  readOnly
+  onFocus={(e) => e.target.removeAttribute("readOnly")}
+  className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+  required
+/>
+
+
+          <textarea
+            name="message"
+            placeholder="Message"
+            value={form.message}
+            onChange={handleChange}
+            autoComplete="off"
+            rows={5}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+            required
+          />
+
+          <button
+            type="submit"
+            className="bg-yellow-400 text-black font-semibold px-6 py-3 rounded-lg hover:bg-yellow-500 transition w-full"
+          >
+            Send Message
+          </button>
+        </form>
+      </section>
+
+      {/* Restaurant Info + Google Map */}
+      <section className="max-w-5xl mx-auto space-y-6">
+        <h3 className="text-2xl font-bold">Our Location</h3>
+        <p>📍 123 Southern Street, CBD Belapur, Navi Mumbai</p>
+        <p>📞 +91 98765 43210</p>
+
+        <div className="w-full h-64 rounded-xl overflow-hidden shadow">
+          <iframe
+            title="Southern Tales Location"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11611872047!2d72.74109855534745!3d19.062536453107355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6e04b2b4b1b%3A0xbdf1c2e3c3e7f9c7!2sCBD%20Belapur%2C%20Navi%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1686266674561!5m2!1sen!2sin"
+            className="w-full h-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </div>
       </section>
-    </div>
+
+      {/* Reviews Section */}
+<section className="max-w-7xl mx-auto space-y-12">
+  <div className="text-center space-y-2">
+    <h2 className="text-3xl font-bold">Customer Reviews</h2>
+    <p className="text-gray-600">
+      Real experiences shared by our guests
+    </p>
+  </div>
+
+  {/* Reviews Grid */}
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {reviewsData.map((review, idx) => (
+      <div
+        key={idx}
+        className="bg-white rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+      >
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-4">
+          {/* Avatar */}
+          <div className="h-12 w-12 rounded-full bg-yellow-400 text-black font-bold flex items-center justify-center text-lg">
+            {review.name.charAt(0)}
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-900">
+              {review.name}
+            </h4>
+            <div className="flex items-center gap-1">
+              {[...Array(review.rating)].map((_, i) => (
+                <Star key={i} />
+              ))}
+              <span className="ml-2 text-sm text-gray-500">
+                {review.rating}.0
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Review Text */}
+        <p className="text-gray-700 leading-relaxed">
+          “{review.comment}”
+        </p>
+      </div>
+    ))}
+  </div>
+
+  {/* Review Submission */}
+  <div className="bg-yellow-50 p-10 rounded-2xl shadow max-w-3xl mx-auto">
+    <h3 className="text-2xl font-bold mb-6 text-center">
+      Share Your Experience
+    </h3>
+
+    {reviewSubmitted && (
+      <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-lg text-center font-medium">
+        ✅ Thank you! Your review has been submitted
+      </div>
+    )}
+
+    <form onSubmit={handleReviewSubmit} className="space-y-4">
+      <input
+        type="text"
+        placeholder="Your Name"
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+        required
+      />
+      <textarea
+        placeholder="Write your review..."
+        rows={4}
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+        required
+      />
+      <button
+        className="bg-yellow-400 text-black font-semibold px-6 py-3 rounded-lg hover:bg-yellow-500 transition w-full"
+      >
+        Submit Review
+      </button>
+    </form>
+  </div>
+</section>
+</div>
   );
-}
+};
+
+export default Contact;

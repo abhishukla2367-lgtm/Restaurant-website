@@ -1,171 +1,177 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ShoppingCart, Phone, X } from "lucide-react";
-import { useCart } from "../context/CartContext";
-
-const navItems = [
-  { id: "home", label: "Home", type: "scroll" },
-  { id: "menu", label: "Menu", type: "page", path: "/menu" },
-  { id: "about", label: "About", type: "page", path: "/about" },
-  { id: "gallery", label: "Gallery", type: "page", path: "/gallery" },
-  { id: "reservation", label: "Reservation", type: "page", path: "/reservation" },
-  { id: "contact", label: "Contact", type: "scroll" },
-];
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, Phone, Menu, X } from "lucide-react";
+import logo from "../assets/images/logo/southern-tales-logo.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const { cartItems } = useCart();
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  const handleNavClick = (item) => {
-    setIsOpen(false);
-    if (item.type === "page") {
-      navigate(item.path);
-      return;
-    }
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(() => {
-        document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
-      }, 300);
-    } else {
-      document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // 👉 WRITE IT HERE
-  const handleCall = () => {
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-
-    if (!isMobile) {
-      window.alert("Call us at +91 98765 43210");
-      return;
-    }
-
-    window.location.href = "tel:+919876543210";
-  };
-
-  useEffect(() => {
-    const esc = (e) => e.key === "Escape" && setIsOpen(false);
-    window.addEventListener("keydown", esc);
-    return () => window.removeEventListener("keydown", esc);
-  }, []);
+  const cartCount = 0;
 
   return (
-    <>
-      {/* HEADER */}
-      <header
-  className={`fixed top-0 w-full z-50 pointer-events-auto transition-colors duration-300 ${
-    isOpen ? "bg-[#3B241B]/90 backdrop-blur-xl" : "bg-[#3B241B]/70 backdrop-blur-xl"
-  }`}
->
-
-      
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex h-[72px] items-center justify-between">
-            {/* Logo */}
-            <div
-              onClick={() => handleNavClick({ id: "home", type: "scroll" })}
-              className="text-yellow-300 font-bold text-xl cursor-pointer"
-            >
-              Southern Tales
-            </div>
-
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex gap-6 flex-1 justify-center">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavClick(item)}
-                  className="text-yellow-200 hover:text-orange-400 transition font-medium"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
-              <button onClick={() => navigate("/cart")} className="relative text-yellow-200">
-                <ShoppingCart size={22} />
-                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full px-1.5">
-                  {totalItems}
-                </span>
-              </button>
-
-              <button
-  onClick={handleCall}
-  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
->
-  <Phone size={16} /> Call Now
-</button>
-
-
-            </div>
-
-            {/* Mobile Hamburger */}
-            <button onClick={() => setIsOpen(true)} className="md:hidden text-3xl text-yellow-200">
-              ☰
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* MOBILE DRAWER */}
+    <header className="fixed top-0 left-0 w-full z-50">
+      {/* HEADER BAR */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-[#3B241B] z-50 transform transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className="
+          flex items-center justify-between
+          px-6 lg:px-12 py-4
+          bg-[#1f1b16]
+          shadow-lg
+        "
       >
-        <div className="flex justify-end p-4">
-          <button onClick={() => setIsOpen(false)}>
-            <X size={28} className="text-yellow-200" />
+        {/* LEFT: LOGO */}
+        <Link to="/" className="flex items-center gap-3">
+          <img src={logo} alt="Southern Tales" className="w-14 h-auto" />
+          <span className="text-2xl font-bold text-white">
+            Southern Tales
+          </span>
+        </Link>
+
+        {/* CENTER: DESKTOP NAV */}
+        <nav className="hidden lg:flex gap-8 font-medium text-gray-200">
+          {[
+            ["Home", "/"],
+            ["Menu", "/menu"],
+            ["About Us", "/about"],
+            ["Gallery", "/gallery"],
+            ["Reservation", "/reservation"],
+            ["Contact", "/contactus"],
+          ].map(([label, path]) => (
+            <Link
+              key={path}
+              to={path}
+              className="hover:text-[#f5c27a] transition"
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* RIGHT: ACTIONS */}
+        <div className="hidden lg:flex items-center gap-4 text-white">
+          {/* CALL NOW – message + mobile safe */}
+          <button
+            onClick={() =>
+              alert("📞 Call on this number: +91 99999 99999")
+            }
+            className="
+              flex items-center gap-2
+              px-4 py-2 rounded-full
+              border border-[#f5c27a]
+              bg-white/10
+              hover:bg-white/20
+            "
+          >
+            <Phone size={16} />
+            Call Now
+          </button>
+
+          {/* CART */}
+          <button
+            onClick={() => navigate("/cart")}
+            className="relative cursor-pointer"
+          >
+            <ShoppingCart size={22} />
+            <span
+              className="
+                absolute -top-2 -right-2
+                w-5 h-5 rounded-full
+                bg-[#f5c27a]
+                text-black text-xs
+                flex items-center justify-center
+              "
+            >
+              {cartCount}
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/login")}
+            className="
+              px-4 py-2 rounded-full
+              border border-[#f5c27a]
+              text-white
+            "
+          >
+            Login
+          </button>
+
+          <button
+            onClick={() => navigate("/register")}
+            className="
+              px-4 py-2 rounded-full
+              bg-[#f5c27a]
+              text-black
+            "
+          >
+            Register
           </button>
         </div>
 
-        <nav className="flex flex-col gap-6 px-6">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavClick(item)}
-              className="text-yellow-200 text-lg text-left hover:text-orange-400"
+        {/* MOBILE MENU TOGGLE */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="lg:hidden text-white"
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </div>
+
+      {/* MOBILE MENU */}
+      {isOpen && (
+        <div className="lg:hidden bg-[#231a14] px-6 py-6 space-y-4 text-white">
+          {[
+            ["Home", "/"],
+            ["Menu", "/menu"],
+            ["About Us", "/about"],
+            ["Gallery", "/gallery"],
+            ["Reservation", "/reservation"],
+            ["Contact", "/contact"],
+          ].map(([label, path]) => (
+            <Link
+              key={path}
+              to={path}
+              onClick={() => setIsOpen(false)}
+              className="block font-medium"
             >
-              {item.label}
-            </button>
+              {label}
+            </Link>
           ))}
 
           <button
-            onClick={() => navigate("/cart")}
-            className="flex items-center gap-3 text-yellow-200 text-lg mt-4"
+            onClick={() =>
+              alert("📞 Call on this number: +91 99999 99999")
+            }
+            className="
+              flex items-center gap-2
+              mt-4 px-4 py-2 rounded-full
+              border border-[#f5c27a]
+              bg-white/10
+            "
           >
-            <ShoppingCart size={22} /> Cart ({totalItems})
+            <Phone size={16} />
+            Call Now
           </button>
 
-          <button
-  onClick={handleCall}
-  className="inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1.5 text-black font-semibold hover:bg-yellow-300 transition"
->
-  <Phone size={16} /> Call Now
-</button>
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={() => navigate("/login")}
+              className="w-full px-4 py-2 rounded-full border border-[#f5c27a]"
+            >
+              Login
+            </button>
 
-
-        </nav>
-      </div>
-
-      {/* BACKDROP */}
-           
-      {isOpen && (
-        <div
-          onClick={() => setIsOpen(false)}
-          className="fixed inset-0 bg-black/40 z-40 pointer-events-auto"
-        />
+            <button
+              onClick={() => navigate("/register")}
+              className="w-full px-4 py-2 rounded-full bg-[#f5c27a] text-black"
+            >
+              Register
+            </button>
+          </div>
+        </div>
       )}
-    </>
+    </header>
   );
 };
 
 export default Header;
-
