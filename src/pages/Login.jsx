@@ -31,7 +31,7 @@ const Login = () => {
     autoComplete="new-password"
     style={{ display: "none" }}
   />
-        <h2 className="text-2xl font-bold text-center">Login</h2>
+        <h2 className="text-2xl font-bold text-center">Welcome Back</h2>
 
         <input
           type="email"
