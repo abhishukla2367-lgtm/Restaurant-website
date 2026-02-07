@@ -2,10 +2,10 @@ import SkeletonCard from "./SkeletonCard";
 
 
 const stats = [
-{ label: "Today's Orders", value: 52 },
+{ label: "Today's Orders", value: 24 },
 { label: "Pending Orders", value: 6 },
-{ label: "Reservations", value: 23 },
-{ label: "Revenue", value: "₹19,450" },
+{ label: "Reservations", value: 12 },
+{ label: "Revenue", value: "₹8,450" },
 ];
 
 

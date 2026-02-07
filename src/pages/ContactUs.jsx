@@ -38,6 +38,8 @@ const Contact = () => {
   });
 
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -187,24 +189,50 @@ const Contact = () => {
     )}
 
     <form onSubmit={handleReviewSubmit} className="space-y-4">
-      <input
-        type="text"
-        placeholder="Your Name"
-        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
-        required
-      />
-      <textarea
-        placeholder="Write your review..."
-        rows={4}
-        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
-        required
-      />
-      <button
-        className="bg-yellow-400 text-black font-semibold px-6 py-3 rounded-lg hover:bg-yellow-500 transition w-full"
-      >
-        Submit Review
-      </button>
-    </form>
+  <input
+    type="text"
+    placeholder="Your Name"
+    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+    required
+  />
+  <textarea
+    placeholder="Write your review..."
+    rows={4}
+    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-yellow-400"
+    required
+  />
+
+  {/* ⭐ Star Rating Input */}
+  <div className="flex flex-col items-center mb-4">
+    <div className="flex space-x-2">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          onMouseEnter={() => setHoverRating(star)}
+          onMouseLeave={() => setHoverRating(0)}
+          onClick={() => setRating(star)}
+          className={`w-8 h-8 cursor-pointer transition-colors ${
+            star <= (hoverRating || rating) ? "text-yellow-400" : "text-gray-300"
+          }`}
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.97c.3.921-.755 1.688-1.54 1.118l-3.381-2.455a1 1 0 00-1.176 0l-3.38 2.455c-.785.57-1.84-.197-1.54-1.118l1.287-3.97a1 1 0 00-.364-1.118L2.075 9.397c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.97z" />
+        </svg>
+      ))}
+    </div>
+    <p className="text-gray-500 mt-2 text-sm">
+      {rating ? `You rated us ${rating} star${rating > 1 ? "s" : ""}` : "Click to rate us!"}
+    </p>
+  </div>
+
+  <button
+    className="bg-yellow-400 text-black font-semibold px-6 py-3 rounded-lg hover:bg-yellow-500 transition w-full"
+  >
+    Submit Review
+  </button>
+</form>
+
   </div>
 </section>
 </div>

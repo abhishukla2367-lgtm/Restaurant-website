@@ -1,43 +1,23 @@
 import { useState } from "react";
-import Sidebar from "./Sidebar";
-import DashboardCards from "./DashboardCards";
-import MenuList from "./MenuList";
-import OrdersList from "./OrdersList";
-import ReservationsList from "./ReservationsList";
-import EmptyState from "./EmptyState";
-import ErrorState from "./ErrorState";
+import Sidebar from "../../components/admin/Sidebar";
+import DashboardCards from "../../components/admin/DashboardCards";
+import MenuList from "../../components/admin/MenuList";
+import OrdersList from "../../components/admin/OrdersList";
+import ReservationsList from "../../components/admin/ReservationsList";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
-  const menuItems = Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    name: `Menu Item ${i + 1}`,
-    price: 100 + i * 20
-  }));
-
-  const error = false;
-
   const renderContent = () => {
-    if (error) return <ErrorState />;
-
     switch (activeTab) {
-      case "dashboard":
-        return <DashboardCards />;
-
       case "menu":
-        return menuItems.length === 0
-          ? <EmptyState />
-          : <MenuList data={menuItems} />;
-
+        return <MenuList />;
       case "orders":
         return <OrdersList />;
-
       case "reservations":
         return <ReservationsList />;
-
       default:
-        return null;
+        return <DashboardCards />;
     }
   };
 

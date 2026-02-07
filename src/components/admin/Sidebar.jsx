@@ -1,24 +1,28 @@
 export default function Sidebar({ active, onChange }) {
-  const linkClass = (tab) =>
-    `block w-full text-left px-4 py-2 rounded ${
-      active === tab ? "bg-gray-200 font-semibold" : ""
-    }`;
+  const itemClass = (tab) =>
+    `cursor-pointer px-4 py-2 rounded-md text-sm font-medium
+     ${active === tab ? "bg-orange-100 text-orange-600" : "text-gray-700 hover:bg-gray-100"}`;
 
   return (
-    <aside className="w-64 bg-white border-r">
-      <nav className="p-4 space-y-2">
-        <button className={linkClass("dashboard")} onClick={() => onChange("dashboard")}>
+    <aside className="w-64 bg-white border-r min-h-screen">
+      <div className="p-4 font-bold text-lg">Admin Panel</div>
+
+      <nav className="flex flex-col gap-2 px-2">
+        <div className={itemClass("dashboard")} onClick={() => onChange("dashboard")}>
           Dashboard
-        </button>
-        <button className={linkClass("menu")} onClick={() => onChange("menu")}>
+        </div>
+
+        <div className={itemClass("menu")} onClick={() => onChange("menu")}>
           Menu
-        </button>
-        <button className={linkClass("orders")} onClick={() => onChange("orders")}>
+        </div>
+
+        <div className={itemClass("orders")} onClick={() => onChange("orders")}>
           Orders
-        </button>
-        <button className={linkClass("reservations")} onClick={() => onChange("reservations")}>
+        </div>
+
+        <div className={itemClass("reservations")} onClick={() => onChange("reservations")}>
           Reservations
-        </button>
+        </div>
       </nav>
     </aside>
   );
