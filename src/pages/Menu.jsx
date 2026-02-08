@@ -230,8 +230,7 @@ export default function Menu() {
                     {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(dish.price)}
                   </span>
 
-                  <button
-                    onClick={() => addToCart(dish)}
+                 <button onClick={() => addToCart({ name: dish.name, price: dish.price })}
                     className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium px-4 py-2 rounded transition-colors duration-200"
                   >
                     Add to Cart

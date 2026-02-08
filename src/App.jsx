@@ -10,7 +10,6 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CartDrawer from "./components/CartDrawer";
 
-// ================= PUBLIC PAGES =================
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import OrderSummaryPage from "./pages/OrderSummaryPage";
@@ -22,17 +21,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 
-// ================= ADMIN PAGES =================
-// ⚠️ Make sure these paths EXIST exactly
 import AdminDashboard from "./components/admin/AdminDashboard";
 import MenuList from "./components/admin/MenuList";
 import OrdersList from "./components/admin/OrdersList";
 import ReservationsList from "./components/admin/ReservationsList";
 
-// ================= CONTEXT =================
 import { CartProvider } from "./context/CartContext";
 
-/* 🔹 Scroll to top on every route change */
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -43,14 +38,13 @@ const ScrollToTop = () => {
   return null;
 };
 
-/* 🔹 Layout handler (hide Header/Footer on admin routes) */
 const Layout = ({ children }) => {
   const { pathname } = useLocation();
   const isAdminRoute = pathname.startsWith("/admin");
 
   return (
     <>
-      {!isAdminRoute && <Header />}
+      {!isAdminRoute && <Header />} 
       <main className={isAdminRoute ? "min-h-screen" : "min-h-[80vh]"}>
         {children}
       </main>
@@ -62,12 +56,12 @@ const Layout = ({ children }) => {
 export default function App() {
   return (
     <CartProvider>
+      
       <Router>
         <ScrollToTop />
-
         <Layout>
           <Routes>
-            {/* ================= PUBLIC ROUTES ================= */}
+          
             <Route path="/" element={<Home />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/order-summary" element={<OrderSummaryPage />} />
@@ -77,21 +71,18 @@ export default function App() {
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/cart" element={<CartDrawer />} />
 
-            {/* ================= AUTH ROUTES ================= */}
+           
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* ================= ADMIN ROUTES ================= */}
+           
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/menu" element={<MenuList />} />
             <Route path="/admin/orders" element={<OrdersList />} />
-            <Route
-              path="/admin/reservations"
-              element={<ReservationsList />}
-            />
+            <Route path="/admin/reservations" element={<ReservationsList />} />
 
-            {/* ================= FALLBACK ================= */}
+            
             <Route path="*" element={<Home />} />
           </Routes>
         </Layout>
