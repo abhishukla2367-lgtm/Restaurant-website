@@ -11,6 +11,7 @@ const Header = () => {
   const { isLoggedIn, logout } = useContext(AuthContext); 
   const [isOpen, setIsOpen] = useState(false);
 
+  // Calculates total quantity; defaults to 0 if cartItems is empty
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -49,11 +50,10 @@ const Header = () => {
 
           <button onClick={() => navigate("/cart")} className="relative cursor-pointer">
             <ShoppingCart size={22} />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#f5c27a] text-black text-xs flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
+            {/* Removed the conditional check so 0 displays by default */}
+            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#f5c27a] text-black text-xs flex items-center justify-center">
+              {cartCount}
+            </span>
           </button>
 
           {isLoggedIn ? (

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useContext, useMemo } from "react"; // Added useMemo
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import API from "../api/axiosConfig"; 
 import { AuthContext } from "../context/AuthContext"; 
 
@@ -8,23 +8,43 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Task 1: Generate stable unique IDs once per mount
+  const fieldIds = useMemo(() => ({
+    user: `u_${Math.random().toString(36).substring(7)}`,
+    pass: `p_${Math.random().toString(36).substring(7)}`
+  }), []);
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Safety check: ensure fields aren't empty
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
     setError("");
     setIsLoading(true);
 
     try {
+      // Task 5: POST to MongoDB Atlas backend
       const res = await API.post("/auth/login", { email, password });
+      
       if (res.data.token) {
         login(res.data.user, res.data.token);
-        navigate("/");
+        // Task 4: Redirect back to previous page
+        navigate(from, { replace: true }); 
       }
     } catch (err) {
-      const message = err.response?.data?.message || "Server unreachable. Check backend terminal.";
+      // Task 5: Catch 401 Unauthorized errors
+      const message = err.response?.data?.message || "Invalid email or password.";
       setError(message);
     } finally {
       setIsLoading(false);
@@ -33,19 +53,15 @@ const Login = () => {
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-[#1f1b16] p-5">
-      {/* 1. Autocomplete Fix: Using hidden inputs to "trap" browser autofill */}
       <form 
         onSubmit={handleSubmit} 
-        className="w-full max-w-[400px] rounded-xl border border-[#333] bg-white p-10 shadow-2xl" 
-        autoComplete="off"
+        className="w-full max-w-[400px] rounded-xl border border-[#333] bg-white p-10 shadow-2xl"
+        autoComplete="new-password"
       >
-        <input type="text" name="prevent_autofill" className="hidden" tabIndex="-1" />
-        <input type="password" name="password_autofill" className="hidden" tabIndex="-1" />
-
         <h2 className="mb-5 text-center text-2xl font-bold text-[#1f1b16]">Welcome Back</h2>
         
         {error && (
-          <p className="mb-4 rounded bg-[#fdecea] p-2.5 text-center text-sm text-[#e74c3c]">
+          <p className="mb-4 rounded bg-[#fdecea] p-2.5 text-center text-sm text-[#e74c3c] border border-red-200">
             {error}
           </p>
         )}
@@ -53,37 +69,36 @@ const Login = () => {
         <div className="mb-4">
           <label className="mb-1 block text-sm font-bold text-[#333]">Email Address</label>
           <input
+            id={fieldIds.user}
+            name={fieldIds.user}
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            // Task 1: Disables typical browser suggestions
+            autoComplete="one-time-code"
             className="w-full rounded-md border border-gray-300 bg-white p-3 text-base text-black outline-none transition-colors focus:border-[#f5c27a]"
             required
-            autoComplete="new-email-field"
-            name={`user_email_${Math.floor(Math.random() * 1000)}`} 
           />
         </div>
 
         <div className="mb-4">
           <label className="mb-1 block text-sm font-bold text-[#333]">Password</label>
           <input
+            id={fieldIds.pass}
+            name={fieldIds.pass}
             type="password"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
             className="w-full rounded-md border border-gray-300 bg-white p-3 text-base text-black outline-none transition-colors focus:border-[#f5c27a]"
             required
-            autoComplete="new-password"
-            name={`user_password_${Math.floor(Math.random() * 1000)}`}
           />
         </div>
 
-        {/* Forgot Password Link Integration */}
         <div className="mb-4 text-right">
-          <Link 
-            to="/forgot-password" 
-            className="text-sm font-semibold text-[#eab366] hover:underline"
-          >
+          <Link to="/forgot-password" className="text-sm font-semibold text-[#eab366] hover:underline">
             Forgot Password?
           </Link>
         </div>
