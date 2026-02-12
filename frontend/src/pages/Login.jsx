@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from "react"; // Added useMemo
+import React, { useState, useContext, useMemo } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import API from "../api/axiosConfig"; 
 import { AuthContext } from "../context/AuthContext"; 
@@ -6,25 +6,22 @@ import { AuthContext } from "../context/AuthContext";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(""); 
   const [isLoading, setIsLoading] = useState(false);
   
-  // Task 1: Generate stable unique IDs once per mount
-  const fieldIds = useMemo(() => ({
-    user: `u_${Math.random().toString(36).substring(7)}`,
-    pass: `p_${Math.random().toString(36).substring(7)}`
-  }), []);
-
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const from = location.state?.from?.pathname || "/profile";
 
-  const from = location.state?.from?.pathname || "/";
+  // Unique IDs help bypass some basic browser autofill logic
+  const fieldIds = useMemo(() => ({
+    user: `user_${Math.random().toString(36).substring(7)}`,
+    pass: `pass_${Math.random().toString(36).substring(7)}`
+  }), []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Safety check: ensure fields aren't empty
     if (!email || !password) {
       setError("Please fill in all fields.");
       return;
@@ -34,91 +31,91 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Task 5: POST to MongoDB Atlas backend
       const res = await API.post("/auth/login", { email, password });
       
-      if (res.data.token) {
-        login(res.data.user, res.data.token);
-        // Task 4: Redirect back to previous page
+      if (res.data.accessToken) {
+        login(res.data, res.data.accessToken);
+        localStorage.setItem("token", res.data.accessToken);
         navigate(from, { replace: true }); 
       }
     } catch (err) {
-      // Task 5: Catch 401 Unauthorized errors
-      const message = err.response?.data?.message || "Invalid email or password.";
-      setError(message);
+      const errMsg = err.response?.data?.message || "Invalid email or password.";
+      setError(typeof errMsg === 'object' ? "An error occurred. Please try again." : errMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-[#1f1b16] p-5">
+    <div className="flex min-h-[80vh] items-center justify-center bg-[#fcfaf8] p-5">
       <form 
         onSubmit={handleSubmit} 
-        className="w-full max-w-[400px] rounded-xl border border-[#333] bg-white p-10 shadow-2xl"
-        autoComplete="new-password"
+        className="w-full max-w-[400px] rounded-2xl border border-gray-200 bg-white p-10 shadow-xl"
+        // Disabling autocomplete at the form level
+        autoComplete="off"
       >
-        <h2 className="mb-5 text-center text-2xl font-bold text-[#1f1b16]">Welcome Back</h2>
+        <h2 className="mb-6 text-center text-3xl font-extrabold text-[#1f1b16]">Welcome Back</h2>
         
         {error && (
-          <p className="mb-4 rounded bg-[#fdecea] p-2.5 text-center text-sm text-[#e74c3c] border border-red-200">
+          <div className="mb-6 rounded-lg bg-red-50 p-3 text-center text-sm font-medium text-red-600 border border-red-100">
             {error}
-          </p>
+          </div>
         )}
 
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-bold text-[#333]">Email Address</label>
+        <div className="mb-5">
+          <label className="mb-2 block text-sm font-bold text-gray-700">Email Address</label>
           <input
             id={fieldIds.user}
-            name={fieldIds.user}
             type="email"
-            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            // Task 1: Disables typical browser suggestions
-            autoComplete="one-time-code"
-            className="w-full rounded-md border border-gray-300 bg-white p-3 text-base text-black outline-none transition-colors focus:border-[#f5c27a]"
+            // Using "nope" is a common trick to stop browsers from forcing autocomplete
+            autoComplete="nope"
+            placeholder="name@example.com"
+            className="w-full rounded-xl border border-gray-300 bg-white p-3.5 text-black outline-none transition-all focus:border-[#f5c27a] focus:ring-2 focus:ring-[#f5c27a]/20"
             required
           />
         </div>
 
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-bold text-[#333]">Password</label>
+        <div className="mb-6">
+          <label className="mb-2 block text-sm font-bold text-gray-700">Password</label>
           <input
             id={fieldIds.pass}
-            name={fieldIds.pass}
             type="password"
-            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
-            className="w-full rounded-md border border-gray-300 bg-white p-3 text-base text-black outline-none transition-colors focus:border-[#f5c27a]"
+            placeholder="••••••••"
+            className="w-full rounded-xl border border-gray-300 bg-white p-3.5 text-black outline-none transition-all focus:border-[#f5c27a] focus:ring-2 focus:ring-[#f5c27a]/20"
             required
           />
-        </div>
-
-        <div className="mb-4 text-right">
-          <Link to="/forgot-password" className="text-sm font-semibold text-[#eab366] hover:underline">
-            Forgot Password?
-          </Link>
         </div>
 
         <button 
           type="submit" 
           disabled={isLoading}
-          className={`mt-2.5 w-full rounded-md bg-[#f5c27a] p-3 font-bold text-[#1f1b16] transition-all duration-300 active:scale-95 ${
-            isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#eab366]"
+          // Restored previous color: bg-[#f5c27a] and hover:bg-[#eab366]
+          className={`w-full rounded-xl bg-[#f5c27a] p-4 font-bold text-[#1f1b16] shadow-md transition-all ${
+            isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#eab366] active:scale-[0.98]"
           }`}
         >
-          {isLoading ? "Authenticating..." : "Login"}
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="h-5 w-5 animate-spin text-[#1f1b16]" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Logging in...
+            </span>
+          ) : "Login"}
         </button>
 
-        <p className="mt-5 text-center text-sm text-[#666]">
+        <div className="mt-8 text-center text-sm text-gray-500">
           Don't have an account?{" "}
-          <Link to="/signup" className="font-semibold text-[#eab366] hover:underline">
+          <Link to="/signup" className="font-bold text-[#eab366] hover:underline">
             Sign Up
           </Link>
-        </p>
+        </div>
       </form>
     </div>
   );

@@ -23,7 +23,7 @@ import Gallery from "./pages/Gallery";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
-import Profile from "./api/user/profile"; // ✅ Task 6: User Profile
+import Profile from "./pages/Profile"; 
 
 // Admin Components
 import AdminDashboard from "./components/admin/AdminDashboard";
