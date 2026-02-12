@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect,useContext } from "react";
+import { useLocation } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext"; 
 import { useCart } from "../context/CartContext";
-import API from "../api/axiosConfig"; 
 
 /* ================= IMAGE IMPORTS ================= */
 import southFoodHero from "../assets/images/hero/south-food.jpg";
@@ -83,58 +83,36 @@ const menuItems = [
 ];
 
 const categories = ["All", "Breakfast", "Starters", "Main Course", "Desserts", "Beverages"];
-
 export default function Menu() {
- const { cart = [], addToCart, clearCart } = useCart();
-  const navigate = useNavigate();
+  const { addToCart } = useCart(); // Cart context
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVeg, setSelectedVeg] = useState("All");
   const [selectedPrice, setSelectedPrice] = useState("All");
   const [activeHero, setActiveHero] = useState(0);
-  const [isOrdering, setIsOrdering] = useState(false);
 
   const heroImages = [southFoodHero, southFoodHero2, southFoodHero3];
 
   useEffect(() => {
-    const interval = setInterval(() => setActiveHero((prev) => (prev + 1) % heroImages.length), 4000);
+    const interval = setInterval(() => setActiveHero((prev) => (prev + 1) % heroImages.length), 3000);
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  // Task 4 & 6: Integration Logic
- const handlePlaceOrder = async () => {
-  try {
-    // Calculate total from cartItems (ensure this name matches your Context)
-    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-    const orderData = {
-      items: cartItems.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price
-      })),
-      totalAmount: totalAmount
-    };
-
-    // This request MUST succeed for data to show on the profile
-    const res = await API.post("/orders", orderData);
-    console.log("Order Response:", res.data); // Debug: Check if 'user' field is present here
-
-    alert("Order placed successfully!");
-    clearCart();
-    navigate("/profile"); 
-  } catch (err) {
-    console.error("Order failed:", err.response?.data || err.message);
-    alert("Could not place order. Check console for details.");
-  }
-};
-
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.scrollToId) {
+      const el = document.getElementById(location.state.scrollToId);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const filteredItems = menuItems.filter((item) => {
     const matchCategory = selectedCategory === "All" || item.category === selectedCategory;
     const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchVeg = selectedVeg === "All" || (selectedVeg === "Veg" && item.veg) || (selectedVeg === "NonVeg" && !item.veg);
-    const priceNum = Number(item.price);
+    const matchVeg =
+      selectedVeg === "All" || (selectedVeg === "Veg" && item.veg) || (selectedVeg === "NonVeg" && !item.veg);
+    const priceNum = Number(item.price); // item.price is already a number
     let matchPrice = true;
     if (selectedPrice === "Under200") matchPrice = priceNum < 200;
     else if (selectedPrice === "200to400") matchPrice = priceNum >= 200 && priceNum <= 400;
@@ -143,85 +121,126 @@ export default function Menu() {
   });
 
   return (
-    <div className="bg-[#fcfaf8] pb-32">
-      {/* Hero Section */}
-      <div className="relative h-[50vh] overflow-hidden">
-        {heroImages.map((img, idx) => (
-          <img
-            key={idx}
-            src={img}
-            alt="Southern Tales"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${idx === activeHero ? "opacity-100" : "opacity-0"}`}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="text-4xl font-bold text-white md:text-6xl">Our Menu</h1>
-        </div>
-      </div>
+    <div className="w-full bg-gray-100">
+      {/* Navbar */}
+      <nav className="bg-orange-700 text-white px-8 py-4 flex items-center justify-between">
+        <div className="text-xl font-bold flex items-center gap-2">🍴 Restaurant</div>
+        <ul className="hidden md:flex gap-6 text-sm font-medium">
+          <li className="hover:text-yellow-300 cursor-pointer">Home</li>
+          <li className="hover:text-yellow-300 cursor-pointer">Menu</li>
+          <li className="hover:text-yellow-300 cursor-pointer">Blog</li>
+          <li className="hover:text-yellow-300 cursor-pointer">Reaction</li>
+          <li className="hover:text-yellow-300 cursor-pointer">About</li>
+          <li className="hover:text-yellow-300 cursor-pointer">Contact</li>
+        </ul>
+        <div className="bg-white rounded-full px-3 py-1 text-black text-sm">🔍</div>
+      </nav>
 
-      <div className="mx-auto max-w-7xl px-4 py-12">
-        {/* Filters */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-6">
-          <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`rounded-full px-6 py-2 text-sm font-bold transition-all ${selectedCategory === cat ? "bg-[#f5c27a] text-[#1f1b16]" : "bg-white text-gray-400 border border-gray-100 hover:border-[#f5c27a]"}`}
-              >
-                {cat}
-              </button>
+      {/* Hero */}
+      <section
+        id="hero-section"
+        className="relative h-[450px] bg-cover bg-center flex items-center"
+        style={{ backgroundImage: `url(${heroImages[activeHero]})` }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-orange-400">Choose Tasty and Healthy</h1>
+          <div className="flex justify-center gap-2 mt-6">
+            {heroImages.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => setActiveHero(index)}
+                className={`w-3 h-3 rounded-full cursor-pointer ${
+                  activeHero === index ? "bg-orange-500" : "bg-white/50"
+                }`}
+              />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Filters */}
+      <div className="max-w-7xl mx-auto py-10 px-4">
+        <h1 className="text-4xl font-bold text-center text-orange-500 mb-8">Our Menu</h1>
+        <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-6">
           <input
             type="text"
-            placeholder="Search favorites..."
-            className="w-full max-w-xs rounded-xl border border-gray-200 p-3 outline-none focus:ring-2 focus:ring-[#f5c27a]/30 md:w-64"
+            placeholder="Search dishes..."
+            value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full md:max-w-md px-4 py-2 border rounded-full focus:ring-2 focus:ring-orange-400"
           />
+          <select
+            value={selectedVeg}
+            onChange={(e) => setSelectedVeg(e.target.value)}
+            className="px-4 py-2 border rounded-full focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="All">All</option>
+            <option value="Veg">Vegetarian</option>
+            <option value="NonVeg">Non-Vegetarian</option>
+          </select>
+          <select
+            value={selectedPrice}
+            onChange={(e) => setSelectedPrice(e.target.value)}
+            className="px-4 py-2 border rounded-full focus:ring-2 focus:ring-orange-400"
+          >
+            <option value="All">All Prices</option>
+            <option value="Under200">Under ₹200</option>
+            <option value="200to400">₹200 - ₹400</option>
+            <option value="Above400">Above ₹400</option>
+          </select>
         </div>
 
-        {/* Menu Grid */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {filteredItems.map((item, idx) => (
-            <div key={idx} className="group flex flex-col rounded-3xl border border-gray-100 bg-white p-4 shadow-sm transition-all hover:shadow-xl">
-              <div className="relative h-44 overflow-hidden rounded-2xl">
-                <img src={item.image} alt={item.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                <div className="absolute top-2 right-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold">
-                  {item.veg ? "🟢 Veg" : "🔴 Non-Veg"}
-                </div>
-              </div>
-              <div className="mt-4 flex-1">
-                <div className="flex items-start justify-between">
-                  <h3 className="font-bold text-[#1f1b16]">{item.name}</h3>
-                  <p className="font-bold text-[#eab366]">₹{item.price}</p>
-                </div>
-                <p className="mt-1 text-xs leading-relaxed text-gray-400">{item.description}</p>
-              </div>
-              <button
-                onClick={() => addToCart(item)}
-                className="mt-4 w-full rounded-xl bg-[#1f1b16] py-3 text-xs font-bold text-white transition-colors hover:bg-[#332d26]"
-              >
-                Add to Cart
-              </button>
-            </div>
+        {/* Categories */}
+        <div className="flex justify-center gap-4 mb-10 flex-wrap">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full font-medium ${
+                selectedCategory === cat
+                  ? "bg-orange-500 text-white"
+                  : "bg-white text-orange-500 border border-orange-500 hover:bg-orange-500 hover:text-white"
+              }`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
 
-        {/* Task 6: Sticky Checkout Button */}
-        {(cart?.length || 0) > 0 && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2">
-            <button
-              onClick={handlePlaceOrder}
-              disabled={isOrdering}
-              className="flex items-center gap-6 rounded-full bg-[#f5c27a] px-10 py-4 font-bold text-[#1f1b16] shadow-2xl transition-transform hover:scale-105 active:scale-95"
+        {/* Menu Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredItems.map((dish, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-xl shadow overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300"
             >
-              <span>🛒 {cart.length} Items</span>
-              <span className="h-6 w-[1px] bg-[#1f1b16]/10"></span>
-              <span>{isOrdering ? "Placing Order..." : "Checkout Now"}</span>
-            </button>
-          </div>
-        )}
+              <img
+                src={dish.image}
+                alt={dish.name}
+                className="w-full h-48 object-cover rounded-t-xl hover:scale-105 transition-transform duration-300 cursor-pointer"
+              />
+              <div className="p-4 flex flex-col flex-1 justify-between">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-semibold text-lg">{dish.name}</h3>
+                  <span className={`w-3 h-3 rounded-full ${dish.veg ? "bg-green-500" : "bg-red-500"}`} />
+                </div>
+                <p className="text-sm text-gray-600 mb-4">{dish.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-orange-500 text-lg">
+                    {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(dish.price)}
+                  </span>
+
+                 <button onClick={() => addToCart(dish,index)}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium px-4 py-2 rounded transition-colors duration-200"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

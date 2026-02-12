@@ -4,8 +4,21 @@ import { createContext, useState, useEffect, useCallback } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // State for user data, derived login status, and initial loading
-  const [user, setUser] = useState(null);
+  /**
+   * TASKS 2 & 6: Persistent Authentication (Sync Initialization)
+   * We initialize state directly from localStorage so 'isLoggedIn' is 
+   * accurate on the very first render.
+   */
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+      return savedUser && token ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      return null;
+    }
+  });
+
   const [loading, setLoading] = useState(true);
 
   /**
@@ -29,27 +42,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   /**
-   * TASKS 2 & 6: Persistent Authentication
-   * On mount, check if a user session exists in localStorage.
+   * Validation check: Ensures token hasn't been manually tampered with
    */
   useEffect(() => {
-    const initAuth = () => {
-      try {
-        const savedUser = localStorage.getItem("user");
-        const token = localStorage.getItem("token");
-
-        if (savedUser && token) {
-          setUser(JSON.parse(savedUser));
-        }
-      } catch (error) {
-        console.error("Auth sync error:", error);
+    const validateSession = () => {
+      const token = localStorage.getItem("token");
+      if (!token && user) {
         logout();
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
-    initAuth();
-  }, [logout]);
+    validateSession();
+  }, [user, logout]);
 
   // Derived state for Task 3 & 4 (Navbar and Protected Action logic)
   const isLoggedIn = !!user;
@@ -64,8 +68,24 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {/* Task 1: Ensure theme is consistent by preventing flickers during auth check */}
-      {!loading ? children : <div className="loader">Loading...</div>}
+      {/* 
+         Task 1: Preventing flickers. 
+         Wait for the validation check to complete before rendering the App routes.
+      */}
+      {!loading ? (
+        children
+      ) : (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          fontSize: '1.2rem',
+          color: '#e67e22' 
+        }}>
+          Loading Auth Session...
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

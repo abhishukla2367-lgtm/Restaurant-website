@@ -1,54 +1,75 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order"); 
-const authMiddleware = require("../middleware/authMiddleware");
+const Cart = require("../models/Cart"); 
+
+// Task 4: Destructure imports to ensure middleware functions work correctly
+const { protect, admin } = require("../middleware/protect");
 
 /**
  * @route   POST /api/orders
- * @desc    Place a new food order
- * @access  Private
+ * @desc    Task 8: Place order, store in DB, and CLEAR CART (Task 8.2)
+ * @access  Private (Login Required)
  */
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", protect, async (req, res) => {
   try {
-    const { items, totalAmount } = req.body;
+    const { items, totalAmount, deliveryInfo } = req.body;
 
-    // 1. Validation: Don't allow empty orders
+    // Requirement: Ensure proper validations for all forms
     if (!items || items.length === 0) {
-      return res.status(400).json({ message: "No items found in order." });
+      return res.status(400).json({ message: "Your cart is empty." });
     }
 
-    // 2. Create Order
-    // Note: req.user.id comes from your verified JWT token
+    // 1. Store order in database (Task 8.1)
     const newOrder = new Order({
-      user: req.user.id, 
-      items: items,
-      totalAmount: totalAmount,
-      status: "Pending" // Match the uppercase "P" in your Order model enum
+      user: req.user.id, // Linked to the logged-in user
+      items,
+      totalAmount,
+      deliveryInfo, 
+      status: "Pending" 
     });
 
     const savedOrder = await newOrder.save();
-    console.log("✅ Order Saved to Atlas:", savedOrder._id);
+
+    // 2. Remove items from cart (Task 8.2 - CRITICAL)
+    await Cart.findOneAndDelete({ user: req.user.id }); 
     
-    res.status(201).json(savedOrder);
+    res.status(201).json({ message: "Order placed successfully", order: savedOrder });
   } catch (err) {
-    console.error("❌ Order Save Error:", err.message);
-    res.status(500).json({ message: "Server Error: Could not save order." });
+    res.status(500).json({ message: "Order failed", error: err.message });
   }
 });
 
 /**
  * @route   GET /api/orders/my-orders
- * @desc    Get all orders for the logged-in user
+ * @desc    Task 6: Display "My Orders" in User Profile page
  * @access  Private
  */
-router.get("/my-orders", authMiddleware, async (req, res) => {
+router.get("/my-orders", protect, async (req, res) => {
   try {
-    // Finds orders where the 'user' field matches the logged-in user's ID
+    // Professional Detail: Sorting by newest first
     const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (err) {
-    console.error("❌ Fetch Orders Error:", err.message);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Error fetching orders" });
+  }
+});
+
+/**
+ * @route   GET /api/orders/admin/all
+ * @desc    Task 8.3: Show orders on Admin side Orders page
+ * @access  Private (Admin only)
+ */
+router.get("/admin/all", protect, admin, async (req, res) => {
+  try {
+    // Populate user details so the Admin can see who placed the order (Requirement #2)
+    const allOrders = await Order.find()
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+      
+    res.status(200).json(allOrders);
+  } catch (err) {
+    res.status(500).json({ message: "Admin fetch failed" });
   }
 });
 

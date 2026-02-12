@@ -3,15 +3,14 @@ import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 /**
- * Tasks 3-6 Protected Route Logic:
- * This component acts as a wrapper for any route that requires a login.
+ * Requirement #4: Access Control Wrapper
+ * Login is required only for: Reserving table & Ordering food.
  */
 const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn, loading } = useContext(AuthContext); // State from Task 3
+  const { isLoggedIn, loading } = useContext(AuthContext); 
   const location = useLocation();
 
-  // TASK 1 & 3: Prevent UI "flicker"
-  // While the app is reading the token from MongoDB/LocalStorage, show a loader
+  // Task 1: Professional Design - Smooth loading state to prevent UI flicker
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#1f1b16]">
@@ -21,13 +20,13 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // TASK 4: Access Control
-  // If not logged in, redirect to /login but SAVE the current location in 'state'
+  // Task 4: Redirect unauthenticated users to /login
+  // We save the 'from' location so users are sent back to where they were after login
   if (!isLoggedIn) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // TASK 6: If logged in, grant access to Profile, Orders, or Reservations
+  // Task 6: Authorized access to Profile, My Orders, and Reservations
   return children;
 };
 

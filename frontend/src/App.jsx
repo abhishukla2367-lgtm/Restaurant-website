@@ -62,14 +62,18 @@ const Layout = ({ children }) => {
 
 export default function App() {
   return (
-    <AuthProvider> {/* Wraps App for Task 5 & 6 Auth Persistence */}
-      <CartProvider>
-        <Router 
-          future={{ 
-            v7_startTransition: true, 
-            v7_relativeSplatPath: true 
-          }}
-        >
+    /* 
+       FIX: The Router must wrap Providers that use the 'useNavigate' hook.
+       This resolves the "useNavigate() may be used only in the context of a <Router> component" error.
+    */
+    <Router 
+      future={{ 
+        v7_startTransition: true, 
+        v7_relativeSplatPath: true 
+      }}
+    >
+      <AuthProvider> {/* Task 5 & 6 Auth Persistence */}
+        <CartProvider> {/* Now safe to use useNavigate inside CartContext */}
           <ScrollToTop />
           <Layout>
             <Routes>
@@ -112,8 +116,8 @@ export default function App() {
               <Route path="*" element={<Home />} />
             </Routes>
           </Layout>
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 }

@@ -12,18 +12,23 @@ const Login = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/profile";
+  
+  /**
+   * TASK FIX: Redirect to Home ("/") by default.
+   * Requirement: Don't show profile page instantly after successful login.
+   */
+  const from = location.state?.from?.pathname || "/";
 
-  // Unique IDs help bypass some basic browser autofill logic
+  // Unique IDs to bypass browser autofill engines
   const fieldIds = useMemo(() => ({
-    user: `user_${Math.random().toString(36).substring(7)}`,
-    pass: `pass_${Math.random().toString(36).substring(7)}`
+    user: `u_${Math.random().toString(36).substring(7)}`,
+    pass: `p_${Math.random().toString(36).substring(7)}`
   }), []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
-      setError("Please fill in all fields.");
+      setError("Please enter both email and password.");
       return;
     }
 
@@ -31,14 +36,24 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      // Task 5: Backend integration using MongoDB Atlas
       const res = await API.post("/auth/login", { email, password });
       
-      if (res.data.accessToken) {
-        login(res.data, res.data.accessToken);
-        localStorage.setItem("token", res.data.accessToken);
+      // Match the key "accessToken" used in your backend response
+      if (res.data.token || res.data.accessToken) {
+        const token = res.data.token || res.data.accessToken;
+        
+        // Destructure to separate token from user data for AuthContext
+        const { token: _, accessToken: __, ...userData } = res.data;
+        
+        // Update global Auth state (Task 3: Toggles Navbar icons)
+        login(userData, token);
+        
+        // Task 4: Redirect to Home (or the page they were trying to access)
         navigate(from, { replace: true }); 
       }
     } catch (err) {
+      // Professional error handling: Displays backend validation messages
       const errMsg = err.response?.data?.message || "Invalid email or password.";
       setError(typeof errMsg === 'object' ? "An error occurred. Please try again." : errMsg);
     } finally {
@@ -51,7 +66,6 @@ const Login = () => {
       <form 
         onSubmit={handleSubmit} 
         className="w-full max-w-[400px] rounded-2xl border border-gray-200 bg-white p-10 shadow-xl"
-        // Disabling autocomplete at the form level
         autoComplete="off"
       >
         <h2 className="mb-6 text-center text-3xl font-extrabold text-[#1f1b16]">Welcome Back</h2>
@@ -69,8 +83,7 @@ const Login = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            // Using "nope" is a common trick to stop browsers from forcing autocomplete
-            autoComplete="nope"
+            autoComplete="off"
             placeholder="name@example.com"
             className="w-full rounded-xl border border-gray-300 bg-white p-3.5 text-black outline-none transition-all focus:border-[#f5c27a] focus:ring-2 focus:ring-[#f5c27a]/20"
             required
@@ -94,7 +107,6 @@ const Login = () => {
         <button 
           type="submit" 
           disabled={isLoading}
-          // Restored previous color: bg-[#f5c27a] and hover:bg-[#eab366]
           className={`w-full rounded-xl bg-[#f5c27a] p-4 font-bold text-[#1f1b16] shadow-md transition-all ${
             isLoading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#eab366] active:scale-[0.98]"
           }`}

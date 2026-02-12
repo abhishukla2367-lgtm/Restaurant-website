@@ -9,7 +9,6 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      // 1. Check if token exists before making the request
       const token = localStorage.getItem("token");
       if (!token) {
         navigate("/login");
@@ -18,14 +17,13 @@ const Profile = () => {
 
       try {
         setLoading(true);
-        // 2. Updated Path: Must include /auth to match your server.js mounting
+        // Requirement #6: Fetch combined profile data from backend
         const res = await API.get("/auth/profile");
         setData(res.data);
       } catch (err) {
         console.error("Profile Fetch Error:", err);
-        // Redirect to login if token is expired (401) or forbidden (403)
         if (err.response?.status === 401 || err.response?.status === 403) {
-          localStorage.removeItem("token"); // Clear invalid token
+          localStorage.removeItem("token");
           navigate("/login");
         }
       } finally {
@@ -47,7 +45,6 @@ const Profile = () => {
     );
   }
 
-  // Handle case where data might be null despite loading being false
   if (!data || !data.user) return null;
 
   const { user, orders, reservations } = data;
@@ -56,7 +53,7 @@ const Profile = () => {
     <div className="min-h-screen bg-[#fcfaf8] pb-20 pt-10">
       <div className="mx-auto max-w-6xl px-4">
         
-        {/* 1. USER DETAILS SECTION */}
+        {/* TASK 6.1: USER DETAILS SECTION */}
         <div className="mb-10 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
           <div className="h-32 bg-[#1f1b16]"></div>
           <div className="px-8 pb-8">
@@ -93,7 +90,7 @@ const Profile = () => {
 
         <div className="grid gap-10 lg:grid-cols-3">
           
-          {/* 2. ORDERS SECTION */}
+          {/* TASK 6.2: MY ORDERS SECTION */}
           <div className="lg:col-span-2">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-xl font-bold text-[#1f1b16]">My Recent Orders</h3>
@@ -146,7 +143,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* 3. RESERVATIONS SECTION */}
+          {/* TASK 6.2: MY RESERVATIONS SECTION */}
           <div className="h-fit">
             <h3 className="mb-4 text-xl font-bold text-[#1f1b16]">My Reservations</h3>
             <div className="space-y-4">
@@ -169,14 +166,12 @@ const Profile = () => {
                   </div>
                 ))
               ) : (
-                <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-white p-10 text-center text-gray-400">
-                  <p className="mb-2 text-3xl">📅</p>
-                  <p className="text-sm font-medium">No upcoming reservations found.</p>
+                <div className="rounded-2xl border border-dashed border-gray-300 p-8 text-center">
+                   <p className="text-sm font-medium text-gray-400">No reservations found.</p>
                 </div>
               )}
             </div>
           </div>
-
         </div>
       </div>
     </div>
