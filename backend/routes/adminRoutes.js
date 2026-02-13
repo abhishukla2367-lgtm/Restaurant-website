@@ -5,14 +5,14 @@ const Reservation = require("../models/Reservation");
 const User = require("../models/User");
 
 // Import your custom middleware (Requirement #4 & #7)
-const { authMiddleware, adminMiddleware } = require("../middleware/authMiddleware");
+const { protect,admin } = require("../middleware/protect");
 
 /**
  * @route   GET /api/admin/reservations
  * @desc    Task 7: Display reservations on Admin side Reservation page
  * @access  Private (Admin only)
  */
-router.get("/reservations", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/reservations", protect, admin, async (req, res) => {
   try {
     // Populate user details (name/email) from the User model for a professional UI
     const allReservations = await Reservation.find()
@@ -30,7 +30,7 @@ router.get("/reservations", authMiddleware, adminMiddleware, async (req, res) =>
  * @desc    Task 8.3: Show order on Admin side Orders page
  * @access  Private (Admin only)
  */
-router.get("/orders", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/orders", protect, admin, async (req, res) => {
   try {
     const allOrders = await Order.find()
       .populate("user", "name email")
@@ -46,7 +46,7 @@ router.get("/orders", authMiddleware, adminMiddleware, async (req, res) => {
  * @route   GET /api/admin/stats
  * @desc    Professional Touch: Summary for Admin Dashboard
  */
-router.get("/stats", authMiddleware, adminMiddleware, async (req, res) => {
+router.get("/stats", protect, admin, async (req, res) => {
   try {
     const totalOrders = await Order.countDocuments();
     const totalReservations = await Reservation.countDocuments();

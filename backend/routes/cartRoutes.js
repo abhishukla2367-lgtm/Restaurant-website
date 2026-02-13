@@ -1,24 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const Cart = require("../models/Cart"); // Ensure you have this model
-const { protect } = require("../middleware/protect"); // Protect these routes
+const Cart = require("../models/Cart"); 
+const { protect } = require("../middleware/protect"); 
 
-// @desc    Get current user's cart items
+// @desc    Task 8: Added items should appear in Cart
 // @route   GET /api/cart
-// @access  Private (Task 4)
 router.get("/", protect, async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id });
-    if (!cart) return res.json({ items: [] });
+    // Professional Detail: Return a valid empty structure if no cart exists
+    if (!cart) return res.json({ items: [], totalPrice: 0 });
     res.json(cart);
   } catch (error) {
     res.status(500).json({ message: "Server Error fetching cart" });
   }
 });
 
-// @desc    Add item to cart
+// @desc    Task 8: Store items in database
 // @route   POST /api/cart/add
-// @access  Private (Task 8)
 router.post("/add", protect, async (req, res) => {
   const { productId, name, price, quantity, image } = req.body;
 
@@ -26,36 +25,43 @@ router.post("/add", protect, async (req, res) => {
     let cart = await Cart.findOne({ user: req.user.id });
 
     if (cart) {
-      // If cart exists, check if item is already in it
-      const itemIndex = cart.items.findIndex((p) => p.productId === productId);
+      // FIX: Use .toString() to compare MongoDB ObjectIds accurately
+      const itemIndex = cart.items.findIndex((p) => p.productId.toString() === productId);
 
       if (itemIndex > -1) {
-        cart.items[itemIndex].quantity += quantity;
+        cart.items[itemIndex].quantity += Number(quantity);
       } else {
-        cart.items.push({ productId, name, price, quantity, image });
+        cart.items.push({ productId, name, price, quantity: Number(quantity), image });
       }
+
+      // Professional Detail: Always recalculate total on the backend
+      cart.totalPrice = cart.items.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
       cart = await cart.save();
     } else {
-      // If no cart, create a new one for user
       cart = await Cart.create({
         user: req.user.id,
-        items: [{ productId, name, price, quantity, image }],
+        items: [{ productId, name, price, quantity: Number(quantity), image }],
+        totalPrice: Number(price) * Number(quantity)
       });
     }
     res.status(201).json(cart);
   } catch (error) {
-    res.status(500).json({ message: "Error adding to cart" });
+    res.status(500).json({ message: "Error adding to cart", error: error.message });
   }
 });
 
-// @desc    Remove specific item from cart
+// @desc    Task 8: User can delete cart items
 // @route   DELETE /api/cart/item/:productId
-// @access  Private (Task 8: User can delete items)
 router.delete("/item/:productId", protect, async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id });
     if (cart) {
-      cart.items = cart.items.filter((item) => item.productId !== req.params.productId);
+      // FIX: Use .toString() to ensure the filter actually finds the item
+      cart.items = cart.items.filter((item) => item.productId.toString() !== req.params.productId);
+      
+      // Recalculate price after removal
+      cart.totalPrice = cart.items.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
+      
       await cart.save();
       return res.json(cart);
     }
@@ -65,9 +71,8 @@ router.delete("/item/:productId", protect, async (req, res) => {
   }
 });
 
-// @desc    Clear entire cart (Used after placing order)
+// @desc    Task 8.2: Remove items from cart on placing order
 // @route   DELETE /api/cart/clear
-// @access  Private (Task 8: Remove items from cart on order)
 router.delete("/clear", protect, async (req, res) => {
   try {
     await Cart.findOneAndDelete({ user: req.user.id });

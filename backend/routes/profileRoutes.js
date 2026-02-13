@@ -4,7 +4,7 @@ const User = require("../models/User");
 const Order = require("../models/Order");
 const Reservation = require("../models/Reservation");
 
-// FIXED: Destructured to prevent TypeError: argument handler must be a function
+// Task 4 & 6: Import the protection middleware
 const { protect } = require("../middleware/protect");
 
 /**
@@ -14,15 +14,15 @@ const { protect } = require("../middleware/protect");
  */
 router.get("/", protect, async (req, res) => {
   try {
-    // Parallel fetching for high-performance (Requirement #2)
+    // Parallel fetching (Task 6.1 & 6.2)
     const [user, orders, reservations] = await Promise.all([
-      // 1. User info (Task 6.1) - Exclude password for security
+      // info from User collection (Task 5)
       User.findById(req.user.id).select("-password"),
 
-      // 2. My Orders (Task 6.2) - Sort by newest
+      // info from Order collection (Task 8)
       Order.find({ user: req.user.id }).sort({ createdAt: -1 }),
 
-      // 3. My Reservations (Task 6.2) - Sort by date
+      // info from Reservation collection (Task 7)
       Reservation.find({ user: req.user.id }).sort({ date: 1 })
     ]);
 
@@ -30,12 +30,7 @@ router.get("/", protect, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Return combined object to populate the Profile page UI
-    res.status(200).json({
-      user,
-      orders,
-      reservations
-    });
+    res.status(200).json({ user, orders, reservations });
   } catch (err) {
     res.status(500).json({ message: "Could not load profile.", error: err.message });
   }
@@ -43,22 +38,24 @@ router.get("/", protect, async (req, res) => {
 
 /**
  * @route   PUT /api/profile/update
- * @desc    Professional Touch: Allow user to update details
+ * @desc    Professional Touch: Update user details (Task 6.1)
  * @access  Private
  */
-router.put("/update", authMiddleware, async (req, res) => {
+// FIXED: Changed authMiddleware to protect to match import
+router.put("/update", protect, async (req, res) => {
   try {
     const { name, phone, address } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       { $set: { name, phone, address } },
-      { new: true } 
+      // new: true returns updated doc; runValidators ensures data is valid
+      { new: true, runValidators: true } 
     ).select("-password");
 
     res.status(200).json(updatedUser);
   } catch (err) {
-    res.status(500).json({ message: "Update failed" });
+    res.status(500).json({ message: "Update failed", error: err.message });
   }
 });
 

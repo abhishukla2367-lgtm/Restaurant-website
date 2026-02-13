@@ -1,26 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const Reservation = require("../models/Reservation");
-
-// Task 4: Destructured imports to fix the "handler must be a function" error
 const { protect, admin } = require("../middleware/protect");
 
+// ==========================================
+// TASK 7: TABLE RESERVATION (USER SIDE)
+// ==========================================
 /**
  * @route   POST /api/reservations
- * @desc    Task 7: Book a table and store in MongoDB Atlas (Requirement #2)
- * @access  Private (Login Required - Task 4)
+ * @desc    Task 4 & 7: Reserve a table (Requires Login)
+ * @access  Private
  */
 router.post("/", protect, async (req, res) => {
   try {
     const { date, time, guests, tableNumber, specialRequests } = req.body;
 
-    // Requirement: Ensure proper validations for all forms
+    // Guideline: Proper validations
     if (!date || !time || !guests) {
-      return res.status(400).json({ message: "Please provide date, time, and guest count." });
+      return res.status(400).json({ 
+        success: false, 
+        message: "Validation Failed: Date, Time, and Guest count are required." 
+      });
     }
 
+    // Task 7: Store reservation in database linked to logged-in user
     const newReservation = new Reservation({
-      user: req.user.id, // Linked to the logged-in user (Task 4)
+      user: req.user.id, 
       date,
       time,
       guests,
@@ -29,42 +34,71 @@ router.post("/", protect, async (req, res) => {
     });
 
     const savedRes = await newReservation.save();
-    res.status(201).json({ message: "Reservation successful!", data: savedRes });
+    res.status(201).json({ 
+      success: true, 
+      message: "Reservation confirmed successfully!", 
+      data: savedRes 
+    });
   } catch (err) {
-    res.status(500).json({ message: "Server Error: Could not book table.", error: err.message });
+    res.status(500).json({ 
+      success: false, 
+      message: "Server Error: Could not process reservation.", 
+      error: err.message 
+    });
   }
 });
 
+// ==========================================
+// TASK 6: USER PROFILE (MY RESERVATIONS)
+// ==========================================
 /**
  * @route   GET /api/reservations/my-reservations
- * @desc    Task 6: Display "My Reservations" on User Profile page
+ * @desc    Task 6: Display personal reservations on Profile page
  * @access  Private
  */
 router.get("/my-reservations", protect, async (req, res) => {
   try {
-    // Professional Detail: Sorting by date to help user plan their visit
-    const reservations = await Reservation.find({ user: req.user.id }).sort({ date: 1 });
-    res.status(200).json(reservations);
+    // Professional Detail: Fetch only the logged-in user's data
+    const reservations = await Reservation.find({ user: req.user.id })
+      .sort({ date: -1 }); // Newest first for better UI
+
+    res.status(200).json({
+      success: true,
+      count: reservations.length,
+      data: reservations
+    });
   } catch (err) {
-    res.status(500).json({ message: "Error fetching your reservations" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Error retrieving your reservations." 
+    });
   }
 });
 
+// ==========================================
+// TASK 7: ADMIN DASHBOARD (ALL RESERVATIONS)
+// ==========================================
 /**
  * @route   GET /api/reservations/admin/all
- * @desc    Task 7: Display reservations on Admin side Reservation page
- * @access  Private (Admin only)
+ * @desc    Task 7: Display ALL reservations on Admin side
+ * @access  Private (Admin Only)
  */
 router.get("/admin/all", protect, admin, async (req, res) => {
   try {
-    // Populate user details so Admin knows who is coming (Requirement #7)
+    // Populate user details so Admin knows the customer's name and email
     const allReservations = await Reservation.find()
-      .populate("user", "name email phone")
+      .populate("user", "name email") 
       .sort({ date: 1 });
       
-    res.status(200).json(allReservations);
+    res.status(200).json({
+      success: true,
+      data: allReservations
+    });
   } catch (err) {
-    res.status(500).json({ message: "Admin fetch failed" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Admin Access Error: Could not fetch all reservations." 
+    });
   }
 });
 
