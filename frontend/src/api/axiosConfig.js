@@ -3,7 +3,7 @@ import axios from "axios";
 // Requirement #2: Connection to your Node.js backend
 const API = axios.create({
   baseURL: "http://localhost:5000/api", // Ensure this matches your server port
-  headers: { "Content-Type": "application/json" }
+  headers: { "Content-Type": "application/json"}
 });
 
 /**
